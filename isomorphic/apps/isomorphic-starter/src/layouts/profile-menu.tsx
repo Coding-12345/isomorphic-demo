@@ -1,4 +1,4 @@
-"use client";
+"use client"; // Ensure this is at the top
 
 import { Title, Text, Avatar, Button, Popover } from "rizzui";
 import cn from "@core/utils/class-names";
@@ -7,6 +7,7 @@ import { signOut } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation"; // Import useRouter for redirection
 
 export default function ProfileMenu({
   buttonClassName,
@@ -82,6 +83,13 @@ const menuItems = [
 ];
 
 function DropdownMenu() {
+  const router = useRouter(); // Use useRouter for programmatic navigation
+
+  const handleSignOut = async () => {
+    await signOut({ redirect: false }); // Prevent automatic redirect
+    router.push("/signin"); // Redirect to the sign-in page
+  };
+
   return (
     <div className="w-64 text-left rtl:text-right">
       <div className="flex items-center border-b border-gray-300 px-6 pb-5 pt-6">
@@ -90,10 +98,7 @@ function DropdownMenu() {
           name="Albert Flores"
         />
         <div className="ms-3">
-          <Title
-            as="h6"
-            className="font-semibold"
-          >
+          <Title as="h6" className="font-semibold">
             Albert Flores
           </Title>
           <Text className="text-gray-600">flores@doe.io</Text>
@@ -114,7 +119,7 @@ function DropdownMenu() {
         <Button
           className="h-auto w-full justify-start p-0 font-medium text-gray-700 outline-none focus-within:text-gray-600 hover:text-gray-900 focus-visible:ring-0"
           variant="text"
-          onClick={() => signOut()}
+          onClick={handleSignOut} // Call handleSignOut on button click
         >
           Sign Out
         </Button>
