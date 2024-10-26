@@ -1,14 +1,32 @@
-'use client';
+'use client'; // Ensure this is a client component
 
+import { useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import Header from "./header";
 import Sidebar from "./sidebar";
 
 export default function HydrogenLayout({ children }: { children: React.ReactNode }) {
+  const { data: session, status } = useSession();
+  const router = useRouter();
   const pathname = usePathname();
 
-  // Check if the current route is '/signin'
+
   const isAuthPage = pathname === "/signin";
+
+  useEffect(() => {
+    if (status === "loading") return; 
+    if (!session && !isAuthPage) {
+      
+      router.push('/signin');
+    }
+  }, [session, status, router, isAuthPage]);
+
+
+  if (status === "loading") {
+    return <div>Loading...</div>; 
+  }
 
   return (
     <main className="flex min-h-screen flex-grow">
@@ -25,7 +43,7 @@ export default function HydrogenLayout({ children }: { children: React.ReactNode
       >
         {/* Conditionally render Header */}
         {!isAuthPage && <Header />}
-        
+
         <div className="flex flex-grow flex-col px-4 pb-6 pt-2 md:px-5 lg:px-6 lg:pb-8 3xl:px-8 3xl:pt-4 4xl:px-10 4xl:pb-9">
           {children}
         </div>
